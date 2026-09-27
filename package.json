@@ -1,0 +1,10 @@
+{
+  "name": "my-doas-app",
+  "version": "2.0.0",
+  "description": "My Doas App: Quranic Doas with a yearly Razorpay subscription",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED",
+  "private": true
+}

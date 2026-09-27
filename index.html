@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Doas App: Quranic Doas</title>
+<meta name="description" content="Quranic Doas with Arabic, transliteration, meaning and recitation.">
+<meta name="theme-color" content="#26262a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Doas">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wall:#26262a; --wall-2:#303035; --pink:#f2a3c0; --pink-deep:#e5789f; --cream:#f4ebd8; --cream-dim:#bfb7a6; --gold:#d8b46b;
+  --line:rgba(244,235,216,.16); --danger:#ff9b9b;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --arabic:'Amiri Quran','Amiri','Scheherazade New','Noto Naskh Arabic','Geeza Pro','Traditional Arabic',serif;
+  --ar-size:34px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 8px);background:var(--wall);-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;color:var(--cream);font-family:var(--serif);font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent;
+  background-color:var(--wall);
+  background-image:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px);
+  min-height:100vh;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+[hidden]{display:none!important}
+
+/* Hero */
+.hero{text-align:center;padding:0 0 12px}
+.hero .wrap{padding:0}
+.hero .head{padding:0 20px;margin-top:-34px;position:relative}
+.banner{display:block;width:100%;height:auto;margin:0 auto;-webkit-mask-image:linear-gradient(#000 62%,transparent 100%);mask-image:linear-gradient(#000 62%,transparent 100%)}
+.hero h1{margin:0;font-size:30px;font-weight:600;letter-spacing:.01em;color:var(--cream)}
+.hero .sub{margin:2px 0 0;font-size:20px;font-style:italic;color:var(--pink)}
+.bism{font-family:var(--arabic);font-size:30px;line-height:2;color:var(--pink);margin:10px 0 0}
+
+body.in-app .hero{padding:0 0 2px}
+body.in-app .banner{height:120px;object-fit:cover;object-position:left bottom}
+body.in-app .hero .head{margin-top:-30px}
+body.in-app .hero h1{font-size:26px}
+body.in-app .bism{font-size:24px;margin-top:4px}
+
+/* Paywall */
+.plan{margin:14px 0 40px;padding:26px 22px;border:1px solid var(--gold);border-radius:18px;background:rgba(0,0,0,.18);text-align:center}
+.price{font-size:44px;font-weight:600;line-height:1.1;color:var(--cream)}
+.per{color:var(--cream-dim);font-size:17px;margin-top:2px}
+.incl{list-style:none;margin:6px auto 22px;padding:0;text-align:left;max-width:420px}
+.incl li{position:relative;padding:8px 0 8px 26px;border-top:1px solid var(--line)}
+.incl li:first-child{border-top:0}
+.incl li::before{content:"";position:absolute;left:4px;top:17px;width:9px;height:9px;border-radius:50%;background:var(--pink)}
+.upi{margin-top:28px;padding-top:22px;border-top:1px solid var(--line)}
+.upi-or{position:relative;text-align:center;margin:0 0 18px;height:1px;background:var(--line)}
+.upi-or span{position:relative;top:-11px;background:var(--wall);padding:0 12px;color:var(--cream-dim);font-size:14px;font-style:italic}
+.upi-qr{display:block;width:100%;max-width:280px;height:auto;margin:0 auto;border-radius:14px}
+.upi-steps{max-width:340px;margin:14px auto 4px;color:var(--cream-dim);font-size:15.5px;text-align:center}
+.redeem{max-width:340px;margin:14px auto 0}
+.redeem input{width:100%;box-sizing:border-box;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--wall-2);color:var(--cream);padding:0 14px;font:inherit;font-size:17px;text-align:center;letter-spacing:.02em}
+.btn.small{margin-top:10px;min-height:46px;font-size:17px}
+.btn.outline{background:transparent;border:1.5px solid var(--pink);color:var(--pink);margin-top:12px}
+.btn.outline:hover{background:rgba(242,163,192,.08)}
+.ck-title{margin:0 0 10px;font-size:24px;font-weight:600;color:var(--cream)}
+.ck-msg{margin:18px auto 22px;max-width:420px;color:var(--cream)}
+.linkbtn{display:block;margin:14px auto 0;padding:8px 14px;color:var(--pink);font-size:17px;text-underline-offset:3px;text-decoration:underline}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:26px;background:var(--pink);color:#2a1f25;font-weight:600;font-size:19px;width:100%;max-width:420px}
+.btn:hover{background:#f6b3cb}
+.btn:active{transform:scale(.985)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.msg{margin:14px auto 0;max-width:420px;font-size:16px;color:var(--cream-dim)}
+.msg.err{color:var(--danger)}
+.testnote{margin:14px auto 0;max-width:420px;padding:8px 12px;border:1px dashed var(--gold);border-radius:10px;font-size:15px;color:var(--gold)}
+
+/* Toolbar */
+.toolbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--wall);padding:12px 0 8px;border-bottom:1px solid var(--line)}
+.search{display:block}
+.search input{width:100%;height:46px;border:1px solid var(--line);background:var(--wall-2);color:var(--cream);border-radius:12px;padding:0 14px;font:inherit;font-size:17px}
+.search input::placeholder{color:var(--cream-dim)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:38px;padding:0 15px;border:1px solid var(--line);border-radius:19px;font-size:16px;color:var(--cream);white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#2a1f25;font-weight:600}
+.prefs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:14px 0 2px}
+.tog{height:36px;padding:0 13px;border-radius:9px;border:1px solid var(--line);font-size:15px;color:var(--cream-dim)}
+.tog[aria-pressed="true"]{color:var(--pink);border-color:var(--pink);font-weight:600}
+.sizer{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.sizer button{height:34px;min-width:46px;font-size:15px;color:var(--cream-dim)}
+.sizer button+button{border-left:1px solid var(--line)}
+.status{margin:8px 0 0;font-size:15px;color:var(--cream-dim)}
+
+/* Doa cards */
+.card{padding:26px 0;border-bottom:1px solid var(--line)}
+.card:last-child{border-bottom:0}
+.meta{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:15px}
+.ref{color:var(--pink);font-weight:600}
+.catl{color:var(--cream-dim);text-align:right}
+.ar{font-family:var(--arabic);font-size:var(--ar-size);line-height:2.2;text-align:center;margin:14px 0 8px;color:var(--pink)}
+.tr{font-style:italic;color:var(--cream);margin:8px 0;font-size:17px;line-height:1.6}
+.en{margin:8px 0;font-size:18px;line-height:1.65;color:var(--cream)}
+.note{margin:12px 0 0;padding-left:12px;border-left:2px solid var(--gold);color:var(--cream-dim);font-size:16px}
+.player{display:flex;align-items:center;gap:12px;margin:6px 0 10px;padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:30px}
+.pbtn{flex:none;width:44px;height:44px;border-radius:50%;background:var(--pink);color:#2a1f25;display:grid;place-items:center}
+.pbtn:active{transform:scale(.95)}
+.pbtn.loading svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pmid{flex:1;min-width:0}
+.ptime{display:block;font-size:14.5px;color:var(--cream-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player.err .ptime{color:var(--danger)}
+.bar{height:3px;margin-top:5px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--pink)}
+.plink{flex:none;font-size:14px;color:var(--pink);text-underline-offset:3px}
+.actions{display:flex;align-items:center;gap:2px;margin-top:12px;flex-wrap:wrap}
+.act{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 11px;border-radius:10px;color:var(--cream-dim);font-size:16px}
+.act:hover{background:rgba(244,235,216,.07)}
+.act.on{color:var(--pink)}
+.spacer{flex:1}
+.count{display:inline-flex;align-items:center;height:42px;padding:0 16px;border:1px solid var(--pink);border-radius:21px;color:var(--pink);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
+.count:active{transform:scale(.97)}
+.reset{width:42px;justify-content:center;padding:0}
+.empty{padding:40px 0;text-align:center;color:var(--cream-dim)}
+.empty button{margin-top:12px;height:42px;padding:0 18px;border-radius:10px;border:1px solid var(--pink);color:var(--pink);font-weight:600}
+.bottom{height:36px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--cream);color:#2a1f25;padding:10px 16px;border-radius:10px;font-size:16px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.boot{padding:60px 0;text-align:center;color:var(--cream-dim)}
+@media (prefers-reduced-motion: reduce){#toast{transition:none}.pbtn:active,.count:active,.btn:active{transform:none}.pbtn.loading svg{animation:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="banner" src="/mosque.jpg" width="991" height="554" alt="Mosque domes and a minaret among clouds, with a gold arch border">
+    <div class="head">
+      <h1>My Doas App</h1>
+      <p class="sub">Quranic Doas</p>
+      <p class="bism" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="root">
+  <div class="boot" id="boot">Opening…</div>
+
+  <!-- Front page -->
+  <section class="plan" id="paywall" hidden>
+    <ul class="incl">
+      <li>Every Quranic Doa in clear Arabic, with transliteration and meaning</li>
+      <li>Recitation audio for each Doa</li>
+      <li>Surah Ad-Duha and the Doas from the last part of the Qur'an</li>
+      <li>Save your favourite Doas and count your repetitions</li>
+    </ul>
+    <button class="btn" id="cardPay" type="button">Pay by card</button>
+    <p class="msg" id="wallmsg" role="status" aria-live="polite"></p>
+    <p class="testnote" id="cardTestnote" hidden>Test mode: no real money is charged.</p>
+
+    <div class="upi" id="upiBox">
+      <p class="upi-or"><span>or</span></p>
+      <img class="upi-qr" src="/upi-qr.png" width="760" height="809" alt="UPI QR code, pre-filled to pay the yearly plan amount" loading="lazy">
+      <p class="upi-steps">Scan with any UPI app to pay, then tap below to unlock right away.</p>
+      <div class="redeem">
+        <input id="upiNote" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="Your name or UPI ref (optional)" maxlength="200">
+        <button class="btn small" id="claimBtn" type="button">I've paid — Unlock</button>
+        <p class="msg" id="redeemMsg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- App -->
+  <div id="app" hidden>
+    <div class="toolbar">
+      <label class="search"><input id="q" type="search" placeholder="Search by meaning, sound or surah" aria-label="Search Doas" autocomplete="off"></label>
+      <div class="chips" id="chips" role="group" aria-label="Filter by theme"></div>
+    </div>
+    <div class="prefs" role="group" aria-label="Display options">
+      <button class="tog" data-action="pref" data-k="tr" aria-pressed="true">Transliteration</button>
+      <button class="tog" data-action="pref" data-k="en" aria-pressed="true">Meaning</button>
+      <span class="sizer" role="group" aria-label="Arabic text size">
+        <button data-action="size" data-d="-2" aria-label="Smaller Arabic text">A−</button>
+        <button data-action="size" data-d="2" aria-label="Larger Arabic text">A+</button>
+      </span>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+    <section id="list"></section>
+    <div class="bottom"></div>
+  </div>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+var CATS=[
+  {id:'all',label:'All'},
+  {id:'fav',label:'Saved'},
+  {id:'forgiveness',label:'Forgiveness'},
+  {id:'guidance',label:'Guidance & faith'},
+  {id:'family',label:'Family & parents'},
+  {id:'patience',label:'Patience & strength'},
+  {id:'protection',label:'Protection'},
+  {id:'knowledge',label:'Knowledge & success'},
+  {id:'trust',label:'Gratitude & trust'},
+  {id:'hardship',label:'Hardship & relief'},
+  {id:'both',label:'This world & the next'},
+  {id:'last',label:'Last part of the Qur\'an'}
+];
+var BASES=['https://everyayah.com/data/Alafasy_128kbps/','https://verses.quran.foundation/Alafasy/mp3/'];
+var TOKEN_KEY='doas:token',CACHE_KEY='doas:cache';
+
+var store={
+  get:function(k,def){try{var v=window.localStorage.getItem(k);return v===null?def:JSON.parse(v);}catch(e){return def;}},
+  set:function(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+  del:function(k){try{window.localStorage.removeItem(k);}catch(e){}}
+};
+
+var state={doas:[],byId:{},q:'',cat:'all',cfg:null,busy:false,
+  fav:new Set(store.get('doas:favs',[])),
+  counts:store.get('doas:counts',{}),
+  prefs:Object.assign({tr:true,en:true,size:34},store.get('doas:prefs',{}))};
+if(!state.fav||typeof state.fav.has!=='function')state.fav=new Set();
+if(!state.counts||typeof state.counts!=='object')state.counts={};
+
+function $(id){return document.getElementById(id);}
+function saveFavs(){store.set('doas:favs',Array.from(state.fav));}
+function saveCounts(){store.set('doas:counts',state.counts);}
+function savePrefs(){store.set('doas:prefs',state.prefs);}
+
+var toastTimer=null;
+function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},1800);}
+
+function api(path,opt){
+  return fetch(path,opt).then(function(r){
+    return r.json().catch(function(){return {};}).then(function(d){
+      if(!r.ok){var e=new Error(d.error||('Request failed ('+r.status+')'));e.status=r.status;throw e;}
+      return d;
+    });
+  });
+}
+
+/* ---------- screens ---------- */
+function show(which){
+  document.body.classList.toggle('in-app',which==='app');
+  $('boot').hidden=which!=='boot';
+  $('paywall').hidden=which!=='paywall';
+  $('app').hidden=which!=='app';
+}
+
+/* ---------- paywall + Stripe card checkout ---------- */
+function setWallMsg(text,isErr){var m=$('wallmsg');m.textContent=text||'';m.classList.toggle('err',!!isErr);}
+function setBusy(b){state.busy=b;$('cardPay').disabled=b;}
+
+function showPaywall(note){
+  show('paywall');
+  setWallMsg(note||'',false);
+  api('/api/config').then(function(cfg){
+    state.cfg=cfg;
+    var stripeOk=(cfg.stripeMode==='test'||cfg.stripeMode==='live');
+    $('cardPay').textContent='Pay by card — $'+cfg.amountUsd+' / year';
+    $('cardPay').disabled=!stripeOk;
+    $('cardTestnote').hidden=cfg.stripeMode!=='test';
+    if(!stripeOk){
+      setWallMsg(cfg.stripeMode==='invalid'?'Card payments are not available right now. Please try again later.':'Card payments are being set up. Please check back soon, or pay via UPI below.',false);
+    }
+  }).catch(function(){
+    $('cardPay').disabled=true;
+    setWallMsg('Could not reach the server. Check your internet connection and reopen the app.',true);
+  });
+}
+
+function payWithCard(){
+  if(state.busy)return;
+  setBusy(true);setWallMsg('Opening secure card payment…',false);
+  api('/api/stripe-session',{method:'POST'}).then(function(o){
+    location.href=o.url;
+  }).catch(function(e){
+    setBusy(false);setWallMsg(e.message||'Could not start the payment. Please try again.',true);
+  });
+}
+
+/* ---------- unlock + content ---------- */
+function openWithToken(token){
+  return api('/api/doas',{headers:{Authorization:'Bearer '+token}}).then(function(d){
+    store.set(CACHE_KEY,{doas:d.doas,exp:d.exp});
+    startApp(d.doas);
+  });
+}
+function startApp(doas){
+  state.doas=doas;state.byId={};
+  doas.forEach(function(d){state.byId[d.id]=d;});
+  applyPrefs();renderChips();renderList();
+  show('app');
+}
+
+function consumeHash(){
+  if(!location.hash||location.hash.length<2)return null;
+  var p=new URLSearchParams(location.hash.slice(1));
+  history.replaceState(null,'',location.pathname+location.search);
+  return p;
+}
+
+function boot(){
+  var fromRedirect=consumeHash();
+  if(fromRedirect&&fromRedirect.has('token')){
+    var t=fromRedirect.get('token');
+    store.set(TOKEN_KEY,t);
+    openWithToken(t).catch(function(){
+      showPaywall('We could not confirm the payment. If money was deducted, it will be refunded by Razorpay.');
+    });
+    return;
+  }
+  var carriedNote=(fromRedirect&&fromRedirect.get('pay_error'))||null;
+  var token=store.get(TOKEN_KEY,null);
+  if(!token){showPaywall(carriedNote);return;}
+  openWithToken(token).catch(function(e){
+    if(e&&e.status===401){store.del(TOKEN_KEY);store.del(CACHE_KEY);showPaywall('Your subscription has ended or could not be confirmed. Subscribe to continue.');return;}
+    var c=store.get(CACHE_KEY,null);
+    if(c&&c.doas&&c.exp>Date.now()){startApp(c.doas);return;}
+    showPaywall(carriedNote||'Could not reach the server. Check your internet connection.');
+  });
+}
+
+/* ---------- helpers ---------- */
+function catLabel(id){for(var i=0;i<CATS.length;i++){if(CATS[i].id===id)return CATS[i].label;}return '';}
+function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’ʿʾ`\-]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
+function stripAr(s){return String(s).replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640\u06DD\uFD3E\uFD3F]/g,'').replace(/[\u0622\u0623\u0625\u0671]/g,'\u0627');}
+function copyText(t){
+  var p=null;
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){p=navigator.clipboard.writeText(t).then(function(){return true;});}}catch(e){p=null;}
+  if(!p)p=Promise.resolve(false);
+  return p.catch(function(){return false;}).then(function(ok){
+    if(ok)return true;
+    try{var ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;opacity:0;top:0;left:0';document.body.appendChild(ta);ta.select();var r=document.execCommand('copy');ta.remove();return r;}catch(e){return false;}
+  });
+}
+function shareText(d){return d.ar+'\n\n'+d.tr+'\n\n'+d.en+'\n\n— '+d.ref;}
+
+/* ---------- icons ---------- */
+function svg(inner,fill){return '<svg width="20" height="20" viewBox="0 0 24 24" fill="'+(fill||'none')+'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+inner+'</svg>';}
+var IC={
+  heart:function(on){return svg('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',on?'currentColor':'none');},
+  copy:svg('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'),
+  share:svg('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>'),
+  reset:svg('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'),
+  play:svg('<path d="M8 5v14l11-7z"/>','currentColor'),
+  pause:svg('<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>','currentColor'),
+  load:svg('<path d="M12 3a9 9 0 1 0 9 9"/>')
+};
+
+/* ---------- audio ---------- */
+var AP={id:null,i:0,tryIdx:0,status:'idle',audio:null,wd:null};
+function pad3(n){return ('00'+n).slice(-3);}
+function srcFor(cfg,verse,idx){return BASES[idx]+pad3(cfg.s)+pad3(verse)+'.mp3';}
+function getAudio(){
+  if(AP.audio)return AP.audio;
+  var a=new Audio();a.preload='none';
+  a.addEventListener('playing',function(){clearTimeout(AP.wd);AP.status='playing';syncPlayers();});
+  a.addEventListener('pause',function(){if(AP.status==='playing'&&!a.ended){AP.status='paused';syncPlayers();}});
+  a.addEventListener('waiting',function(){if(AP.status==='playing'){AP.status='loading';syncPlayers();}});
+  a.addEventListener('timeupdate',syncPlayers);
+  a.addEventListener('ended',onEnded);
+  a.addEventListener('error',function(){if(!AP.id||AP.status==='idle'||AP.status==='error')return;AP.tryIdx++;loadVerse();});
+  AP.audio=a;return a;
+}
+function loadVerse(){
+  var d=state.byId[AP.id];if(!d||!d.audio)return;
+  var cfg=d.audio;
+  if(AP.tryIdx>=BASES.length){clearTimeout(AP.wd);AP.status='error';try{AP.audio.pause();}catch(e){}syncPlayers();return;}
+  var a=getAudio();AP.status='loading';a.src=srcFor(cfg,cfg.f+AP.i,AP.tryIdx);
+  clearTimeout(AP.wd);AP.wd=setTimeout(function(){if(AP.status==='loading'){AP.tryIdx++;loadVerse();}},10000);
+  syncPlayers();
+  var pr=a.play();
+  if(pr&&pr.catch)pr.catch(function(err){if(err&&err.name==='NotAllowedError'){clearTimeout(AP.wd);AP.status='paused';syncPlayers();}});
+}
+function onEnded(){
+  var d=state.byId[AP.id];if(!d)return;
+  var n=d.audio.t-d.audio.f+1;
+  if(AP.i<n-1){AP.i++;AP.tryIdx=0;loadVerse();}
+  else{AP.status='idle';AP.i=0;syncPlayers();}
+}
+function stopCurrent(){clearTimeout(AP.wd);AP.status='idle';try{if(AP.audio)AP.audio.pause();}catch(e){}}
+function togglePlay(id){
+  var a=getAudio();
+  if(AP.id===id){
+    if(AP.status==='playing'){a.pause();return;}
+    if(AP.status==='paused'){var pr=a.play();if(pr&&pr.catch)pr.catch(function(){});return;}
+    if(AP.status==='loading')return;
+  }
+  stopCurrent();AP.id=id;AP.i=0;AP.tryIdx=0;loadVerse();
+}
+function syncPlayers(){
+  document.querySelectorAll('.player').forEach(function(p){
+    var id=p.dataset.id,d=state.byId[id];if(!d||!d.audio)return;
+    var active=AP.id===id,st=active?AP.status:'idle',n=d.audio.t-d.audio.f+1;
+    var btn=p.querySelector('.pbtn'),tm=p.querySelector('.ptime'),bar=p.querySelector('.bar i');
+    if(btn.dataset.st!==st){
+      btn.dataset.st=st;
+      btn.innerHTML=st==='playing'?IC.pause:(st==='loading'?IC.load:IC.play);
+      btn.classList.toggle('loading',st==='loading');
+      btn.setAttribute('aria-label',st==='playing'?'Pause recitation':'Play recitation');
+    }
+    p.classList.toggle('err',st==='error');
+    var txt;
+    if(st==='error')txt='Audio did not load. Open it on Quran.com.';
+    else if(st==='loading')txt='Loading…';
+    else if(st==='playing'||st==='paused')txt=(n>1?'Verse '+(AP.i+1)+' of '+n:'Playing');
+    else txt='Recitation by Alafasy';
+    if(tm.textContent!==txt)tm.textContent=txt;
+    var pct=0,a=AP.audio;
+    if(active&&(st==='playing'||st==='paused')&&a&&isFinite(a.duration)&&a.duration>0)pct=Math.min(100,((AP.i+a.currentTime/a.duration)/n)*100);
+    bar.style.width=pct+'%';
+  });
+}
+function playerHTML(d){
+  if(!d.audio)return '';
+  var n=d.audio.t-d.audio.f+1;
+  var link='https://quran.com/'+d.audio.s+'/'+d.audio.f+(n>1?'-'+d.audio.t:'');
+  return '<div class="player" data-id="'+d.id+'">'+
+    '<button class="pbtn" data-action="play" data-id="'+d.id+'" aria-label="Play recitation">'+IC.play+'</button>'+
+    '<div class="pmid"><span class="ptime"></span><div class="bar"><i></i></div></div>'+
+    '<a class="plink" href="'+link+'" target="_blank" rel="noopener">Quran.com</a></div>';
+}
+
+/* ---------- rendering ---------- */
+function cardHTML(d){
+  var on=state.fav.has(d.id),n=state.counts[d.id]||0;
+  var h='<article class="card" data-id="'+d.id+'">';
+  h+='<div class="meta"><span class="ref">'+d.ref+'</span><span class="catl">'+catLabel(d.cat)+'</span></div>';
+  h+='<p class="ar" lang="ar" dir="rtl">'+d.ar+'</p>';
+  h+=playerHTML(d);
+  if(state.prefs.tr)h+='<p class="tr">'+d.tr+'</p>';
+  if(state.prefs.en)h+='<p class="en">'+d.en+'</p>';
+  if(d.note)h+='<p class="note">'+d.note+'</p>';
+  h+='<div class="actions">';
+  h+='<button class="act'+(on?' on':'')+'" data-action="fav" data-id="'+d.id+'" aria-pressed="'+on+'" aria-label="'+(on?'Remove from saved':'Save Doa')+'">'+IC.heart(on)+'<span>'+(on?'Saved':'Save')+'</span></button>';
+  h+='<button class="act" data-action="copy" data-id="'+d.id+'" aria-label="Copy Doa">'+IC.copy+'<span>Copy</span></button>';
+  h+='<button class="act" data-action="share" data-id="'+d.id+'" aria-label="Share Doa">'+IC.share+'<span>Share</span></button>';
+  h+='<span class="spacer"></span>';
+  if(n>0)h+='<button class="act reset" data-action="reset" data-id="'+d.id+'" aria-label="Reset counter">'+IC.reset+'</button>';
+  h+='<button class="count" data-action="count" data-id="'+d.id+'" aria-label="Count repetitions">'+(n>0?'×'+n:'Count')+'</button>';
+  h+='</div></article>';
+  return h;
+}
+function matches(d){
+  if(state.cat==='fav'&&!state.fav.has(d.id))return false;
+  if(state.cat!=='all'&&state.cat!=='fav'&&d.cat!==state.cat)return false;
+  if(!state.q.trim())return true;
+  if(/[\u0600-\u06FF]/.test(state.q))return stripAr(d.ar).indexOf(stripAr(state.q.trim()))!==-1;
+  var hay=norm([d.en,d.tr,d.ref,d.note||'',catLabel(d.cat)].join(' '));
+  return norm(state.q).split(' ').filter(Boolean).every(function(t){return hay.indexOf(t)!==-1;});
+}
+function renderChips(){
+  $('chips').innerHTML=CATS.map(function(c){
+    var label=c.id==='fav'?'Saved ('+state.fav.size+')':c.label;
+    return '<button class="chip" data-action="cat" data-cat="'+c.id+'" aria-pressed="'+(state.cat===c.id)+'">'+label+'</button>';
+  }).join('');
+}
+function renderList(){
+  var items=state.doas.filter(matches),list=$('list'),total=state.doas.length;
+  $('status').textContent=items.length===total?total+' Doas':items.length+' of '+total+' Doas';
+  if(!items.length){
+    var msg=state.cat==='fav'&&!state.q?'Nothing saved yet. Tap Save on any Doa to keep it here.':'No Doas match your search.';
+    list.innerHTML='<div class="empty"><p>'+msg+'</p><button data-action="clear">Show all Doas</button></div>';
+    return;
+  }
+  list.innerHTML=items.map(cardHTML).join('');
+  syncPlayers();
+}
+function refreshCard(id){
+  var d=state.byId[id];if(!d)return;
+  document.querySelectorAll('.card[data-id="'+id+'"]').forEach(function(el){el.outerHTML=cardHTML(d);});
+  syncPlayers();
+}
+function applyPrefs(){
+  document.documentElement.style.setProperty('--ar-size',state.prefs.size+'px');
+  document.querySelectorAll('[data-action="pref"]').forEach(function(b){b.setAttribute('aria-pressed',String(!!state.prefs[b.dataset.k]));});
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-action]');if(!b)return;
+  var a=b.dataset.action,id=b.dataset.id,d=id?state.byId[id]:null;
+  switch(a){
+    case 'cat':state.cat=b.dataset.cat;renderChips();renderList();break;
+    case 'clear':state.cat='all';state.q='';$('q').value='';renderChips();renderList();break;
+    case 'pref':state.prefs[b.dataset.k]=!state.prefs[b.dataset.k];savePrefs();applyPrefs();renderList();break;
+    case 'size':state.prefs.size=Math.max(24,Math.min(56,state.prefs.size+parseInt(b.dataset.d,10)));savePrefs();applyPrefs();break;
+    case 'fav':
+      if(state.fav.has(id))state.fav.delete(id);else state.fav.add(id);
+      saveFavs();renderChips();
+      if(state.cat==='fav')renderList();else refreshCard(id);
+      break;
+    case 'copy':copyText(shareText(d)).then(function(ok){toast(ok?'Copied':'Could not copy. Select the text instead.');});break;
+    case 'share':
+      if(navigator.share){navigator.share({text:shareText(d)}).catch(function(){});}
+      else{copyText(shareText(d)).then(function(ok){toast(ok?'Copied to share':'Could not copy. Select the text instead.');});}
+      break;
+    case 'count':
+      state.counts[id]=(state.counts[id]||0)+1;saveCounts();
+      try{if(navigator.vibrate)navigator.vibrate(8);}catch(err){}
+      refreshCard(id);break;
+    case 'reset':delete state.counts[id];saveCounts();refreshCard(id);break;
+    case 'play':togglePlay(id);break;
+  }
+});
+$('cardPay').addEventListener('click',payWithCard);
+$('q').addEventListener('input',function(e){state.q=e.target.value;renderList();});
+$('claimBtn').addEventListener('click',claimUpi);
+$('upiNote').addEventListener('keydown',function(e){if(e.key==='Enter')claimUpi();});
+
+function claimUpi(){
+  var note=$('upiNote').value.trim(),msg=$('redeemMsg'),btn=$('claimBtn');
+  btn.disabled=true;msg.textContent='Unlocking…';msg.classList.remove('err');
+  api('/api/upi-claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({note:note})}).then(function(d){
+    store.set(TOKEN_KEY,d.token);
+    return openWithToken(d.token);
+  }).catch(function(e){
+    btn.disabled=false;
+    msg.textContent=e.message||'Could not unlock right now. Please try again.';msg.classList.add('err');
+  });
+}
+
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}
+boot();
+})();
+</script>
+</body>
+</html>
